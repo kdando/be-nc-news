@@ -8,9 +8,11 @@ const connection = require("./db/connection");
 
 //require controllers
 const getTopics = require("./controllers/topics.controller")
+const getEndpoints = require("./controllers/endpoints.controller")
 
 //ENDPOINTS
 app.get("/api/topics", getTopics);
+app.get("/api", getEndpoints);
 
 //ERROR HANDLING
 //Bad path
