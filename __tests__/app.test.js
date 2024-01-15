@@ -7,6 +7,9 @@ const testData = require("../db/data/test-data/index")
 //require supertest
 const supertest = require("supertest");
 
+//require endpoints file for comparison in tests
+const endpoints = require("../endpoints.json")
+
 //seed database with test data before each test, end connection to database after all tests
 beforeEach(() => {
     return seed(testData);
@@ -18,8 +21,8 @@ afterAll(() => {
 
 describe("app.js GET requests", () => {
 
-    //Functionality tests
     describe("GET /api/topics", () => {
+    //Functionality tests
         test("Status: 200 should return an array", () => {
             return supertest(app)
             .get("/api/topics")
@@ -59,7 +62,27 @@ describe("app.js GET requests", () => {
                 expect(result.body.msg).toBe("Path does not exist.")
             })
         })
-
     })
+
+    describe("GET /api", () => {
+    //Functionality tests
+        test("Status: 200 should return an object", () => {
+            return supertest(app)
+            .get("/api")
+            .then((result) => {
+                expect(200);
+                expect(typeof result.body).toBe("object");
+            })
+        })
+        test("returned object should match our endpoints.json", () => {
+            return supertest(app)
+            .get("/api")
+            .then((result) => {
+                expect(result.body).toEqual(endpoints)
+            })
+        })
+    })
+
+
 
 })

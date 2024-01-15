@@ -3,6 +3,7 @@ const fetchAllTopics = require("../models/topics.model");
 
 //Get all topics
 function getTopics (req, res, next) {
+   
     fetchAllTopics()
     .then((result) => {
         return res.send(result)
