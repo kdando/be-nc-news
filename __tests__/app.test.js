@@ -83,6 +83,26 @@ describe("app.js GET requests", () => {
         })
     })
 
+    describe("GET /api/articles/:article_id", () => {
+
+        //Create random number within range of test data values for parametric endpoint testing
+        let article_id = Math.floor(Math.random()*(15-1))+1;
+        console.log(article_id)
+
+    //Functionality tests
+        test("Status: 200 should return a single object", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}`)
+            .then((result) => {
+                console.log(result.body);
+                expect(200);
+                expect(result.body).toBeInstanceOf(Object);
+                expect(Array.isArray(result.body)).toBe(false);
+            })
+        })
+
+    })
+
 
 
 })

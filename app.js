@@ -9,10 +9,12 @@ const connection = require("./db/connection");
 //require controllers
 const getTopics = require("./controllers/topics.controller")
 const getEndpoints = require("./controllers/endpoints.controller")
+const getArticleById = require("./controllers/articles.controller")
 
 //ENDPOINTS
 app.get("/api/topics", getTopics);
 app.get("/api", getEndpoints);
+app.get("/api/articles/:article_id", getArticleById);
 
 //ERROR HANDLING
 //Bad path
