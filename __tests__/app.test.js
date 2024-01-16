@@ -19,7 +19,7 @@ afterAll(() => {
 })
 
 
-describe("app.js GET requests", () => {
+describe("app GET requests", () => {
 
     describe("GET /api/topics", () => {
     //Functionality tests
@@ -84,10 +84,8 @@ describe("app.js GET requests", () => {
     })
 
     describe("GET /api/articles/:article_id", () => {
-
         //Create random number within range of test data values for parametric endpoint testing
         let article_id = Math.floor(Math.random()*(15-1))+1;
-
     //Functionality tests
         test("Status: 200 should return a single object", () => {
             return supertest(app)
@@ -102,7 +100,6 @@ describe("app.js GET requests", () => {
             return supertest(app)
             .get(`/api/articles/${article_id}`)
             .then((result) => {
-                console.log(result.body);
                 expect(200);
                 expect(result.body).toHaveProperty("author", expect.any(String));
                 expect(result.body).toHaveProperty("title", expect.any(String));
@@ -125,13 +122,53 @@ describe("app.js GET requests", () => {
         })
         test("Status 404 and appropriate message if valid but non-existent article_id", () => {
             return supertest(app)
-            .get(`/api/articles/333`)
+            .get("/api/articles/333")
             .then((result) => {
                 expect(404);
                 expect(result.body.msg).toBe("No article with that id found.")
             })
         })
+    })
 
+    describe("GET api/articles", () => {
+    //Functionality tests
+        test("Status: 200 should return an array", () => {
+            return supertest(app)
+            .get("/api/articles/")
+            .then((result) => {
+                expect(200);
+                expect(Array.isArray(result.body)).toBe(true);
+            })
+        })
+        test("objects in array should be sorted by date, descending", () => {
+            return supertest(app)
+            .get("/api/articles")
+            .then((result) => {
+                expect(200);
+                expect(result.body).toBeSortedBy("created_at", {descending: true});
+            })
+        })
+        test("objects in array should not include body", () => {
+            return supertest(app)
+            .get("/api/articles")
+            .then((result) => {
+                expect(200);
+                result.body.forEach((object) => {
+                    expect(object).not.toHaveProperty("body");
+                })
+            })
+        })
+        test("objects in array should include comment_count", () => {
+            return supertest(app)
+            .get("/api/articles")
+            .then((result) => {
+                expect(200);
+                result.body.forEach((object) => {
+                    expect(object).toHaveProperty("comment_count");
+                    expect(Number(object.comment_count)).not.toBeNaN();
+                })
+            })
+        })
     })
 
 
