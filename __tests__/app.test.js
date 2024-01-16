@@ -19,7 +19,7 @@ afterAll(() => {
 })
 
 
-describe("app GET requests", () => {
+describe("app core GET requests", () => {
 
     describe("GET /api/topics", () => {
     //Functionality tests
@@ -233,9 +233,31 @@ describe("app GET requests", () => {
                 expect(result.body.msg).toBe("Invalid article id.")
             })
         })
-
     })
 
+})
 
+describe("app core POST requests", () => {
+
+    describe("POST /api/articles/:article_id/comments", () => {
+        //Functionality tests
+
+        //test variable for parametric endpoint
+        const article_id = 3;
+
+        test("Status: 201 should return the posted comment", () => {
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send({
+                "username": "gawain",
+                "body": "I don't know where I am."
+            })
+            .expect(201)
+            .then((result)=> {
+                console.log("Hello")
+            })
+        })
+
+    })
 
 })
