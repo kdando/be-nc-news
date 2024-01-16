@@ -84,8 +84,9 @@ describe("app GET requests", () => {
     })
 
     describe("GET /api/articles/:article_id", () => {
-        //Create random number within range of test data values for parametric endpoint testing
-        let article_id = Math.floor(Math.random()*(15-1))+1;
+        //test variable for parametric endpoint
+        const article_id = 3;
+
     //Functionality tests
         test("Status: 200 should return a single object", () => {
             return supertest(app)
@@ -120,7 +121,7 @@ describe("app GET requests", () => {
                 expect(result.body.msg).toBe("Invalid article id.")
             })
         })
-        test("Status 404 and appropriate message if valid but non-existent article_id", () => {
+        test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
             return supertest(app)
             .get("/api/articles/333")
             .then((result) => {
@@ -169,6 +170,70 @@ describe("app GET requests", () => {
                 })
             })
         })
+    })
+
+    describe("GET /api/articles/:article_id/comments", () => {
+    // Functionality tests
+
+        //test variable for parametric endpoint
+        const article_id = 1;
+
+        test("Status: 200 should return an array", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}/comments`)
+            .then((result) => {
+                expect(200);
+                expect(Array.isArray(result.body)).toBe(true);
+            })
+        })
+        test("array should be sorted by date, most recent first", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}/comments`)
+            .then((result) => {
+                expect(200);
+                expect(result.body).toBeSortedBy("created_at", {descending: true});
+            })
+        })
+        test("array objects should have expected properties and values", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}/comments`)
+            .then((result) => {
+                const firstComment = result.body[0];
+                expect(firstComment.article_id).toBe(article_id);
+                expect(firstComment.author).toBe("icellusedkars");
+                expect(firstComment.comment_id).toBe(5);
+                expect(firstComment.votes).toBe(0);
+                expect(firstComment.created_at).toBe("2020-11-03T21:00:00.000Z");
+                expect(firstComment.body).toBe("I hate streaming noses");
+            })
+        })
+
+    //Error handling tests
+        test("Status: 404 and appropriate message if article present but has no comments", () => {
+            return supertest(app)
+            .get("/api/articles/7/comments")
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("Article has no comments.")
+            })
+        })
+        test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
+            return supertest(app)
+            .get("/api/articles/333/comments")
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("No article with that id found.")
+            })
+        })
+        test("Status: 400 and appropriate message if invalid article_id", () => {
+            return supertest(app)
+            .get("/api/articles/cupcake/comments")
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("Invalid article id.")
+            })
+        })
+
     })
 
 

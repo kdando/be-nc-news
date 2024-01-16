@@ -2,7 +2,6 @@
 const { fetchArticleById, fetchAllArticles } = require("../models/articles.model.js");
 
 //ARTICLE BY ID
-//extract parameter and invoke model with it
 function getArticleById (req, res, next) {
     const article_id = req.params.article_id;
     fetchArticleById(article_id)
