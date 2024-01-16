@@ -87,17 +87,48 @@ describe("app.js GET requests", () => {
 
         //Create random number within range of test data values for parametric endpoint testing
         let article_id = Math.floor(Math.random()*(15-1))+1;
-        console.log(article_id)
 
     //Functionality tests
         test("Status: 200 should return a single object", () => {
             return supertest(app)
             .get(`/api/articles/${article_id}`)
             .then((result) => {
-                console.log(result.body);
                 expect(200);
                 expect(result.body).toBeInstanceOf(Object);
                 expect(Array.isArray(result.body)).toBe(false);
+            })
+        })
+        test("returned article object has expected properties in expected formats", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}`)
+            .then((result) => {
+                console.log(result.body);
+                expect(200);
+                expect(result.body).toHaveProperty("author", expect.any(String));
+                expect(result.body).toHaveProperty("title", expect.any(String));
+                expect(result.body).toHaveProperty("article_id", expect.any(Number));
+                expect(result.body).toHaveProperty("body", expect.any(String));
+                expect(result.body).toHaveProperty("topic", expect.any(String));
+                expect(result.body).toHaveProperty("created_at", expect.any(String));
+                expect(result.body).toHaveProperty("votes", expect.any(Number));
+                expect(result.body).toHaveProperty("article_img_url", expect.any(String));
+            })
+        })
+    //Error handling tests
+        test("Status: 400 and appropriate message if invalid article_id", () => {
+            return supertest(app)
+            .get(`/api/articles/banana`)
+            .then((result) => {
+                expect(400);
+                expect(result.body.msg).toBe("Invalid article id.")
+            })
+        })
+        test("Status 404 and appropriate message if valid but non-existent article_id", () => {
+            return supertest(app)
+            .get(`/api/articles/333`)
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("No article with that id found.")
             })
         })
 
