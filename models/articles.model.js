@@ -1,22 +1,45 @@
 //require connection
 const connection = require("../db/connection")
 
-//ARTICLE BY ID
-function fetchArticleById (article_id) {
+//CHECK ARTICLE EXISTS
+function checkArticleExists (article_id) {
+    
     if (isNaN(Number(article_id))) {
         return Promise.reject({ status: 400, msg: "Invalid article id."})
     }
+
     return connection.query(
         `SELECT * FROM articles
-        WHERE articles.article_id = $1;`, [article_id]
-        )
+        WHERE article_id = $1;`, [article_id]
+    )
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "No article with that id found."})
+        }
+        return;
+    })
+}
+
+
+//ARTICLE BY ID
+function fetchArticleById (article_id) {
+
+    return checkArticleExists(article_id)
+    .then(() => {
+        return connection.query(
+            `SELECT * FROM articles
+            WHERE articles.article_id = $1;`, [article_id]
+            )
         .then((result) => {
-            if (result.rows.length === 0) {
-                return Promise.reject({ status: 404, msg: "No article with that id found."})
-            } else {
-                return result.rows[0];
-            }
+                if (result.rows.length === 0) {
+                    return Promise.reject({ status: 404, msg: "No article with that id found."})
+                } else {
+                    return result.rows[0];
+                }
         })
+    })
+
+    
 }
 
 //ALL ARTICLES
@@ -45,4 +68,4 @@ function fetchAllArticles () {
     })
 }
 
-module.exports = { fetchArticleById, fetchAllArticles }
+module.exports = { checkArticleExists, fetchArticleById, fetchAllArticles }

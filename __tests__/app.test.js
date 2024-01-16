@@ -120,7 +120,7 @@ describe("app GET requests", () => {
                 expect(result.body.msg).toBe("Invalid article id.")
             })
         })
-        test("Status 404 and appropriate message if valid but non-existent article_id", () => {
+        test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
             return supertest(app)
             .get("/api/articles/333")
             .then((result) => {
@@ -169,6 +169,50 @@ describe("app GET requests", () => {
                 })
             })
         })
+    })
+
+    describe("GET /api/articles/:article_id/comments", () => {
+    // Functionality tests
+
+        //test variable for parametric endpoint
+        const article_id = 1;
+
+        test("Status: 200 should return an array", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}/comments`)
+            .then((result) => {
+                expect(200);
+                expect(Array.isArray(result.body)).toBe(true);
+            })
+        })
+        test("array should be sorted by date, most recent first", () => {
+            return supertest(app)
+            .get(`/api/articles/${article_id}/comments`)
+            .then((result) => {
+                expect(200);
+                expect(result.body).toBeSortedBy("created_at", {descending: true});
+            })
+        })
+
+
+    //Error handling tests
+        test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
+            return supertest(app)
+            .get("/api/articles/333/comments")
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("No article with that id found.")
+            })
+        })
+        test("Status: 400 and appropriate message if invalid article_id", () => {
+            return supertest(app)
+            .get("/api/articles/cupcake/comments")
+            .then((result) => {
+                expect(404);
+                expect(result.body.msg).toBe("Invalid article id.")
+            })
+        })
+
     })
 
 
