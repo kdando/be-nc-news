@@ -260,12 +260,12 @@ describe("app core GET requests", () => {
 describe("app core POST requests", () => {
 
     describe("POST /api/articles/:article_id/comments", () => {
-        //Functionality tests
+    //Functionality tests
 
-        //test variable for parametric endpoint testing
+        //test variable for parametric endpoint
         const article_id = 3;
 
-        //test comment for post request testing
+        //test comment for post request
         const newComment = {
             "username": "gawain",
             "body": "I don't know where I am."
