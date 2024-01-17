@@ -12,7 +12,7 @@ function getCommentsByArticleId (req, res, next) {
 
     Promise.all([articleExistenceQuery, commentsFetchQuery])
     .then((result) => {
-        return res.status(200).send(result[1]);
+        return res.status(200).send({comments: result[1]});
     })
     .catch((error) => {
         next(error);

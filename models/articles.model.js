@@ -3,7 +3,6 @@ const connection = require("../db/connection")
 
 //CHECK ARTICLE EXISTS
 function checkArticleExists (article_id) {
-    
     if (isNaN(Number(article_id))) {
         return Promise.reject({ status: 400, msg: "Invalid article id."})
     }
