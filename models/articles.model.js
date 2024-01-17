@@ -19,8 +19,7 @@ function checkArticleExists (article_id) {
     })
 }
 
-
-//ARTICLE BY ID
+//GET ARTICLE BY ID
 function fetchArticleById (article_id) {
 
     return checkArticleExists(article_id)
@@ -30,18 +29,14 @@ function fetchArticleById (article_id) {
             WHERE articles.article_id = $1;`, [article_id]
             )
         .then((result) => {
-                if (result.rows.length === 0) {
-                    return Promise.reject({ status: 404, msg: "No article with that id found."})
-                } else {
-                    return result.rows[0];
-                }
+            return result.rows[0];
         })
     })
 
     
 }
 
-//ALL ARTICLES
+//GET ALL ARTICLES
 function fetchAllArticles () {
     return connection.query(
         `SELECT articles.author,
@@ -67,4 +62,22 @@ function fetchAllArticles () {
     })
 }
 
-module.exports = { checkArticleExists, fetchArticleById, fetchAllArticles }
+//PATCH ARTICLE BY ID
+function updateArticleVotes(article_id, votes) {
+
+    return checkArticleExists(article_id)
+    .then(() => {
+        return connection.query(
+            `UPDATE articles
+            SET votes = votes + $2
+            WHERE articles.article_id = $1
+            RETURNING *;`, [article_id, votes]
+            )
+        .then((result) => {
+            return result.rows[0];
+        })
+    })
+
+}
+
+module.exports = { checkArticleExists, fetchArticleById, fetchAllArticles, updateArticleVotes }

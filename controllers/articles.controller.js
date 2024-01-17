@@ -1,7 +1,7 @@
 //require models
-const { fetchArticleById, fetchAllArticles } = require("../models/articles.model.js");
+const { fetchArticleById, fetchAllArticles, updateArticleVotes } = require("../models/articles.model.js");
 
-//ARTICLE BY ID
+//GET ARTICLE BY ID
 function getArticleById (req, res, next) {
     const article_id = req.params.article_id;
     fetchArticleById(article_id)
@@ -13,7 +13,7 @@ function getArticleById (req, res, next) {
     })
 }
 
-//ALL ARTICLES
+//GET ALL ARTICLES
 function getArticles (req, res, next) {
     fetchAllArticles()
     .then((result) => {
@@ -24,5 +24,28 @@ function getArticles (req, res, next) {
     })
 }
 
+//PATCH ARTICLE VOTES BY ID
+function patchArticleById (req, res, next) {
+
+    const article_id = req.params.article_id
+    const votes = req.body.inc_votes;
+
+    if (req.body.inc_votes === undefined) {
+        return res.status(400).send({ msg: "Requires an 'inc_votes' key."})
+    }
+    if (typeof votes !== "number") {
+        return res.status(400).send({ msg: "Votes must be a number."})
+    }
+
+    updateArticleVotes(article_id, votes)
+    .then((result) => {
+        return res.status(200).send({article: result});
+    })
+    .catch((error) => {
+        next(error);
+    })
+    
+}
+
 //export
-module.exports = { getArticleById, getArticles }
+module.exports = { getArticleById, getArticles, patchArticleById }

@@ -350,3 +350,76 @@ describe("app core POST requests", () => {
     })
 
 })
+
+describe("app core PATCH requests", () => {
+
+    describe("PATCH /api/articles/:article_id", () => {
+    //Functionality tests
+        test("Status: 200 should respond with updated article", () => {
+            //test variable for parametric endpoint
+            const article_id = 3;
+            //test object for patch request
+            const newVotes = {
+                "inc_votes": 100
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(200)
+                const article = result.body.article;
+                expect(article).toBeInstanceOf(Object);
+                expect(Array.isArray(article)).toBe(false);
+                expect(article.votes).toBe(100)
+            })
+        })
+        test("article's 'votes' key value is correctly adjusted", () => {
+            //new test variable
+            const article_id = 1;
+            //new test object
+            const newVotes = {
+                "inc_votes": -50
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(200)
+                const article = result.body.article;
+                expect(article.votes).toBe(50);
+            })
+        })
+    //Error handling tests
+        test("Status: 400 if inc_votes is note a number", () => {
+            //new test variable
+            const article_id = 9;
+            //new test object
+            const newVotes = {
+                "inc_votes": "one hundred"
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(400)
+                expect(result.body.msg).toBe("Votes must be a number.");
+            })
+        })
+        test("Status: 400 if request object is malformed", () => {
+            //new test variable
+            const article_id = 9;
+            //new test object
+            const newVotes = {
+                "increase_vote_total": 1000
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(400)
+                expect(result.body.msg).toBe("Requires an 'inc_votes' key.");
+            })
+        })
+    })
+
+})
