@@ -272,7 +272,7 @@ describe("app core POST requests", () => {
             return supertest(app)
             .post(`/api/articles/${article_id}/comments`)
             .send(newComment)
-            .then((result)=> {
+            .then((result)=> {;
                 expect(result.status).toBe(201);
                 const comment = result.body.comment;
                 expect(comment.author).toBe(newComment.username);
