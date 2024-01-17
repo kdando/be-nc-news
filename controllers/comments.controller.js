@@ -1,5 +1,5 @@
 //req models
-const { fetchCommentsByArticle, addComment } = require("../models/comments.model")
+const { fetchCommentsByArticle, addComment, checkUserExists } = require("../models/comments.model")
 const { checkArticleExists } = require("../models/articles.model")
 
 //GET COMMENTS BY ARTICLE
@@ -25,19 +25,25 @@ function postCommentByArticleId (req, res, next) {
     
     const article_id = req.params.article_id;
     const comment = req.body;
+    const { username, body } = comment;
 
-    checkArticleExists(article_id)
-    .then(() => {
+    if (username === undefined || body === undefined) {
+        return res.status(400).send({ msg: "Comment must have username and body."})
+    }
 
+    const articleExistenceQuery = checkArticleExists(article_id);
+    const userExistenceQuery = checkUserExists(username);
+
+    Promise.all([articleExistenceQuery, userExistenceQuery])
+    .then((result) => {
         addComment(article_id, comment)
         .then((result) => {
-            
             return res.status(201).send({comment: result})
-
         })
-
     })
-    
+    .catch((error) => {
+        next(error)
+    })
     
 }
 
