@@ -6,7 +6,7 @@ function getTopics (req, res, next) {
    
     fetchAllTopics()
     .then((result) => {
-        return res.send(result)
+        return res.status(200).send({topics: result})
     })
     //Catch error and pass to next error-handling middleware
     .catch((error) => {
