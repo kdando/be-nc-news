@@ -9,7 +9,7 @@ const connection = require("./db/connection");
 //require controllers
 const getTopics = require("./controllers/topics.controller")
 const getEndpoints = require("./controllers/endpoints.controller")
-const { getArticleById, getArticles } = require("./controllers/articles.controller")
+const { getArticleById, getArticles, patchArticleById } = require("./controllers/articles.controller")
 const { getCommentsByArticleId, postCommentByArticleId } = require("./controllers/comments.controller")
 
 ////ENDPOINTS////
@@ -19,6 +19,7 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+app.patch("/api/articles/:article_id", patchArticleById);
 
 ////ERROR HANDLING////
 //400 Bad Path

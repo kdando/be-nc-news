@@ -19,14 +19,7 @@ function fetchCommentsByArticle (article_id) {
 
 //POST A COMMENT
 function addComment (article_id, comment) {
-
-    // if (comment.username === undefined || comment.body === undefined) {
-    //     console.log("WE GETTING REJECTED BABY")
-    //     return Promise.reject({ status: 400, msg: "Comment must have username and body."})
-    // }
-
     const { username, body } = comment;
-
     return connection.query(
         `INSERT INTO comments (article_id, author, body, votes)
         VALUES ($1, $2, $3, 0)
@@ -35,7 +28,6 @@ function addComment (article_id, comment) {
         .then((result) => {
             return result.rows[0];
         })
-
 }
 
 //CHECK USERNAME EXISTS
