@@ -423,3 +423,42 @@ describe("app core PATCH requests", () => {
     })
 
 })
+
+describe("app core DELETE requests", () => {
+
+    describe("DELETE /api/comments/:comment_id", () => {
+    //Functionality tests
+        test("Status: 204 for successful deletion should return no content", () => {
+            //test variable for parametric endpoint
+            const comment_id = 2;
+            return supertest(app)
+            .delete(`/api/comments/${comment_id}`)
+            .then((result) => {
+                expect(result.status).toBe(204);
+                expect(result.body).toEqual({});
+            })
+        })
+    //Error handling tests
+        test("Status: 400 and appropriate message if comment id invalid.", () => {
+            //new test variable
+            const comment_id = "worst comment";
+            return supertest(app)
+            .delete(`/api/comments/${comment_id}`)
+            .then((result) => {
+                expect(result.status).toBe(400);
+                expect(result.body.msg).toEqual("Invalid comment id.");
+            })
+        })
+        test("Status: 404 and appropriate message if comment id valid but not present.", () => {
+            //new test variable
+            const comment_id = 888;
+            return supertest(app)
+            .delete(`/api/comments/${comment_id}`)
+            .then((result) => {
+                expect(result.status).toBe(404);
+                expect(result.body.msg).toEqual("No comment with that id found.");
+            })
+        })
+    })
+
+})
