@@ -261,25 +261,91 @@ describe("app core POST requests", () => {
 
     describe("POST /api/articles/:article_id/comments", () => {
     //Functionality tests
+        test("Status: 201 should return the posted comment", () => {
+            //test variable for parametric endpoint
+            const article_id = 3;
+            //test comment for post request
+            const newComment = {
+                "username": "lurker",
+                "body": "I don't know where I am."
+            };
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result)=> {
+                expect(result.status).toBe(201);
+                const comment = result.body.comment;
+                expect(comment.author).toBe(newComment.username);
+                expect(comment.body).toBe(newComment.body)
+            })
+        })
 
-        //test variable for parametric endpoint
-        const article_id = 3;
+    //Error handling tests
+        test("Status: 404 and appropriate message if username not in database", () => {
+            //test variable for parametric endpoint
+            const article_id = 6;
+            //test comment for post request
+            const newComment = {
+                "username": "GenuineHumanBeing",
+                "body": "Total freedom in 3 easy steps!!CLICKHERE"
+            };
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result) => {
+                expect(result.status).toBe(404);
+                expect(result.body.msg).toBe("No user with that name found.")
+            })
+        })
 
-        //test comment for post request
-        const newComment = {
-            "username": "gawain",
-            "body": "I don't know where I am."
-        };
+        test("Status: 400 and appropriate message if request comment object missing necessary properties", () => {
+            //test variable for parametric endpoint
+            const article_id = 1;
+            //test comment for post request
+            const newComment = {
+                "username": "butter_bridge",
+            };
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result) => {
+                expect(result.status).toBe(400);
+                expect(result.body.msg).toBe("Comment must have username and body.")
+            })
+        })
 
-        // test("Status: 201 should return the posted comment", () => {
-        //     return supertest(app)
-        //     .post(`/api/articles/${article_id}/comments`)
-        //     .send(newComment)
-        //     .expect(201)
-        //     .then((result)=> {
-        //         console.log("Hello")
-        //     })
-        // })
+        test("Status: 400 and appropriate message if invalid article_id", () => {
+            //test variable for parametric endpoint
+            const article_id = "pinecone";
+            //test comment for post request
+            const newComment = {
+                "username": "lurker",
+                "body": "The secret to life is..."
+            };
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result) => {
+                expect(result.status).toBe(400);
+                expect(result.body.msg).toBe("Invalid article id.")
+            })
+        })
+        test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
+            //test variable for parametric endpoint
+            const article_id = 777;
+            //test comment for post request
+            const newComment = {
+                "username": "lurker",
+                "body": "Wait this time I've got it..."
+            };
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result) => {
+                expect(result.status).toBe(404);
+                expect(result.body.msg).toBe("No article with that id found.")
+            })
+        })
 
     })
 
