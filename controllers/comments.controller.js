@@ -1,8 +1,8 @@
 //req models
-const fetchCommentsByArticle = require("../models/comments.model")
+const { fetchCommentsByArticle, addComment } = require("../models/comments.model")
 const { checkArticleExists } = require("../models/articles.model")
 
-//COMMENTS BY ARTICLE
+//GET COMMENTS BY ARTICLE
 function getCommentsByArticleId (req, res, next) {
 
     const article_id = req.params.article_id;
@@ -20,5 +20,26 @@ function getCommentsByArticleId (req, res, next) {
 
 }
 
+//POST COMMENT TO ARTICLE
+function postCommentByArticleId (req, res, next) {
+    
+    const article_id = req.params.article_id;
+    const comment = req.body;
 
-module.exports = getCommentsByArticleId;
+    checkArticleExists(article_id)
+    .then(() => {
+
+        addComment(article_id, comment)
+        .then((result) => {
+            
+            return res.status(201).send({comment: result})
+
+        })
+
+    })
+    
+    
+}
+
+
+module.exports = { getCommentsByArticleId, postCommentByArticleId }

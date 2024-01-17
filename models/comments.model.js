@@ -1,8 +1,8 @@
 //require connection
 const connection = require("../db/connection")
 
+//GET COMMENTS
 function fetchCommentsByArticle (article_id) {
-    
     return connection.query(
         `SELECT * FROM comments
         WHERE comments.article_id = $1
@@ -15,8 +15,22 @@ function fetchCommentsByArticle (article_id) {
                 return result.rows;
             }
         })
+}
 
+//POST A COMMENT
+function addComment (article_id, comment) {
+
+    const { username, body } = comment;
+
+    return connection.query(
+        `INSERT INTO comments (article_id, author, body, votes)
+        VALUES ($1, $2, $3, 0)
+        RETURNING *;`, [article_id, username, body]
+        )
+        .then((result) => {
+            return result.rows[0];
+        })
 
 }
 
-module.exports = fetchCommentsByArticle;
+module.exports = { fetchCommentsByArticle, addComment }

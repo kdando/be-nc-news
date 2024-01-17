@@ -257,29 +257,33 @@ describe("app core GET requests", () => {
 
 })
 
-describe("app core POST requests", () => {
+describe.only("app core POST requests", () => {
 
     describe("POST /api/articles/:article_id/comments", () => {
     //Functionality tests
 
-        //test variable for parametric endpoint
-        const article_id = 3;
+        test("Status: 201 should return the posted comment", () => {
 
-        //test comment for post request
-        const newComment = {
-            "username": "gawain",
-            "body": "I don't know where I am."
-        };
+            //test variable for parametric endpoint
+            const article_id = 3;
 
-        // test("Status: 201 should return the posted comment", () => {
-        //     return supertest(app)
-        //     .post(`/api/articles/${article_id}/comments`)
-        //     .send(newComment)
-        //     .expect(201)
-        //     .then((result)=> {
-        //         console.log("Hello")
-        //     })
-        // })
+            //test comment for post request
+            const newComment = {
+                "username": "lurker",
+                "body": "I don't know where I am."
+            };
+
+            return supertest(app)
+            .post(`/api/articles/${article_id}/comments`)
+            .send(newComment)
+            .then((result)=> {
+                expect(result.status).toBe(201);
+                const comment = result.body.comment;
+                expect(comment.author).toBe(newComment.username);
+                expect(comment.body).toBe(newComment.body)
+            })
+        })
+        
 
     })
 
