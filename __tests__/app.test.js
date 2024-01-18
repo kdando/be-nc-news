@@ -301,12 +301,12 @@ describe("app core GET requests", () => {
                 expect(Array.isArray(articles)).toBe(true);
             })
         });
-        test.only("resulting array should only include articles for the queried topic", () => {
+        test("resulting array should only include articles for the queried topic", () => {
             const testTopic = "cats";
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-                console.log(result.body);
+                
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 articles.forEach((article) => {
@@ -316,12 +316,12 @@ describe("app core GET requests", () => {
         });
 
     //Error handling tests
-        test("Status: 404 and appropriate message if topic does not exist", () => {
+        test.only("Status: 404 and appropriate message if topic does not exist", () => {
             const testTopic = "nuclear_secrets"
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-               
+                
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No topic with that name found.")
             })
@@ -331,7 +331,6 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-                
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No articles found for that topic.")
             })
