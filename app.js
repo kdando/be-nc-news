@@ -14,15 +14,16 @@ const { getCommentsByArticleId, postCommentByArticleId, deleteCommentById } = re
 const getUsers = require("./controllers/users.controller")
 
 ////ENDPOINTS////
-app.get("/api/topics", getTopics);
 app.get("/api", getEndpoints);
-app.get("/api/articles/:article_id", getArticleById);
+app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
+app.get("/api/users", getUsers);
+app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchArticleById);
 app.delete("/api/comments/:comment_id", deleteCommentById);
-app.get("/api/users", getUsers);
+
 
 ////ERROR HANDLING////
 //400 Bad Path

@@ -186,8 +186,6 @@ describe("app core GET requests", () => {
     describe("GET /api/articles/:article_id/comments", () => {
     // Functionality tests
 
-        
-
         test("Status: 200 should return an array", () => {
             //test variable for parametric endpoint
             const article_id = 5;
@@ -296,17 +294,18 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
+
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 expect(Array.isArray(articles)).toBe(true);
             })
         });
+
         test("resulting array should only include articles for the queried topic", () => {
             const testTopic = "cats";
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-                
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 articles.forEach((article) => {
@@ -316,22 +315,21 @@ describe("app core GET requests", () => {
         });
 
     //Error handling tests
-        test.only("Status: 404 and appropriate message if topic does not exist", () => {
+        test("Status: 404 and appropriate message if topic does not exist", () => {
             const testTopic = "nuclear_secrets"
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-                
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No topic with that name found.")
             })
         });
-        test("Status: 404 and appropriate message if topic exists but has no articles", () => {
+        test("Status: 200 and appropriate message if topic exists but has no articles", () => {
             const testTopic = "paper"
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-                expect(result.status).toBe(404);
+                expect(result.status).toBe(200);
                 expect(result.body.msg).toBe("No articles found for that topic.")
             })
         });

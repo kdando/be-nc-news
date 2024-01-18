@@ -1,5 +1,4 @@
 const connection = require("../db/connection");
-const articles = require("../db/data/test-data/articles");
 const { checkTopicExists } = require("./topics.model");
 
 //CHECK ARTICLE EXISTS
@@ -50,14 +49,14 @@ function fetchArticlesByTopic (topic) {
             `SELECT articles.*,
             COUNT(comments.article_id) AS comment_count 
             FROM articles 
-            LEFT JOIN comments 
+            JOIN comments 
             ON articles.article_id = comments.article_id
             WHERE articles.topic = $1 
             GROUP BY articles.article_id;`, [topic]
             )
         .then((result) => {
             if (result.rows.length === 0) {
-                return Promise.reject({ status: 404, msg: "No articles found for that topic."});
+                return Promise.reject({ status: 200, msg: "No articles found for that topic."});
             } else {
                 return result.rows;
             }
@@ -65,6 +64,16 @@ function fetchArticlesByTopic (topic) {
         })
     })
 }
+
+/*
+`SELECT articles.*,
+COUNT(comments.article_id) AS comment_count 
+FROM articles 
+JOIN comments 
+ON articles.article_id = comments.article_id
+WHERE articles.topic = $1 
+GROUP BY articles.article_id;`
+*/
 
 //GET ALL ARTICLES
 function fetchAllArticles () {
