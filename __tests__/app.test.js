@@ -116,6 +116,7 @@ describe("app core GET requests", () => {
                 expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
                 expect(article.votes).toBe(0);
                 expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+                expect(article.comment_count).toBe("2");
             })
         })
     //Error handling tests
@@ -305,9 +306,9 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
+                
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
-                
                 articles.forEach((article) => {
                     expect(article.topic).toBe(`${testTopic}`)
                 })
@@ -315,12 +316,12 @@ describe("app core GET requests", () => {
         });
 
     //Error handling tests
-        test("Status: 404 and appropriate message if topic does not exist", () => {
+        test.only("Status: 404 and appropriate message if topic does not exist", () => {
             const testTopic = "nuclear_secrets"
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-               
+                
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No topic with that name found.")
             })
@@ -330,7 +331,6 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-               
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No articles found for that topic.")
             })
