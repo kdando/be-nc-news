@@ -48,7 +48,7 @@ To get started, run:
 
 This will create your databases.
 
-The test suites are set-up to re-seed with test data before each test runs. To seed with development data run:
+The test suites are set to re-seed with test data before each test runs. To seed with development data run:
 
 `npm run seed`
 
