@@ -86,8 +86,7 @@ describe("app core GET requests", () => {
         })
     })
 
-    describe("GET /api/articles/:article_id", () => {
-        
+    describe("GET /api/articles/:article_id", () => {     
     //Functionality tests
         test("Status: 200 should return a single object", () => {
             //test variable for parametric endpoint
@@ -256,12 +255,13 @@ describe("app core GET requests", () => {
 
     describe("GET /api/users", () => {
     //Functionality tests
-        test("Status: 200 should return an array", () => {
+        test.only("Status: 200 should return an array", () => {
             return supertest(app)
             .get("/api/users/")
             .then((result) => {
                 expect(result.status).toBe(200);
                 const users = result.body.users
+                console.log(users);
                 expect(Array.isArray(users)).toBe(true);
             })
         })
