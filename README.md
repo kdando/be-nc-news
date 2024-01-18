@@ -34,7 +34,7 @@ To either the test or development database respectively.
 
 This project uses jest, jest-extended, jest-sorted and supertest for testing. To install each as a dev dependency run this command:
 
-`npm install name_of_library`
+`npm install -D name_of_library`
 
 (For further detail on each see the following links) [https://jestjs.io/docs/getting-started] [https://jest-extended.jestcommunity.dev/docs/] [https://github.com/P-Copley/jest-sorted] [https://github.com/ladjs/supertest]
 
