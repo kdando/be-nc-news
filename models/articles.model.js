@@ -1,5 +1,5 @@
-//require connection
-const connection = require("../db/connection")
+const connection = require("../db/connection");
+const { checkTopicExists } = require("./topics.model");
 
 //CHECK ARTICLE EXISTS
 function checkArticleExists (article_id) {
@@ -34,6 +34,25 @@ function fetchArticleById (article_id) {
     })
 
     
+}
+
+//GET ARTICLES BY TOPIC
+function fetchArticlesByTopic (topic) {
+    return checkTopicExists(topic)
+    .then(() => {
+        return connection.query(
+            `SELECT * FROM articles
+            WHERE articles.topic = $1;`, [topic]
+            )
+        .then((result) => {
+            if (result.rows.length === 0) {
+                return Promise.reject({ status: 404, msg: "No articles found for that topic."});
+            } else {
+                return result.rows;
+            }
+            
+        })
+    })
 }
 
 //GET ALL ARTICLES
@@ -80,4 +99,4 @@ function updateArticleVotes(article_id, votes) {
 
 }
 
-module.exports = { checkArticleExists, fetchArticleById, fetchAllArticles, updateArticleVotes }
+module.exports = { checkArticleExists, fetchArticleById, fetchArticlesByTopic, fetchAllArticles, updateArticleVotes }

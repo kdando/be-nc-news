@@ -1,19 +1,33 @@
-//require connection
 const connection = require("../db/connection")
 
-//fetch all topics
+//CHECK TOPIC EXISTS
+function checkTopicExists (topic) {
+    if (typeof topic !== "string") {
+        return Promise.reject({ status: 400, msg: "Invalid topic."})
+    }
+    return connection.query(
+        `SELECT * FROM topics
+        WHERE slug = $1;`, [topic]
+    )
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "No topic with that name found."})
+        }
+        return;
+    })
+}
+
+//GET ALL TOPICS
 function fetchAllTopics() {
     return connection.query(`SELECT * FROM topics;`)
     .then((result) => {
-        //Custom error for empty results array
         if (result.rows.length === 0) {
             return Promise.reject({status: 404, msg: "No topics found!"})
         } else {
-        //Otherwise, return the results
             return result.rows;
         }
     })
 }
 
 //export
-module.exports = fetchAllTopics;
+module.exports = { checkTopicExists, fetchAllTopics };

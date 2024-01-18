@@ -255,13 +255,12 @@ describe("app core GET requests", () => {
 
     describe("GET /api/users", () => {
     //Functionality tests
-        test.only("Status: 200 should return an array", () => {
+        test("Status: 200 should return an array", () => {
             return supertest(app)
             .get("/api/users/")
             .then((result) => {
                 expect(result.status).toBe(200);
                 const users = result.body.users
-                console.log(users);
                 expect(Array.isArray(users)).toBe(true);
             })
         })
@@ -287,6 +286,57 @@ describe("app core GET requests", () => {
                 }
             })
         })
+    })
+
+    describe("GET /api/articles (topic query)", () => {
+    //Functionality tests
+        test("Status: 200 should respond with an array of articles", () => {
+            const testTopic = "mitch";
+            return supertest(app)
+            .get(`/api/articles?topic=${testTopic}`)
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles
+                expect(Array.isArray(articles)).toBe(true);
+            })
+        });
+        test("resulting array should only include articles for the queried topic", () => {
+            const testTopic = "cats";
+            return supertest(app)
+            .get(`/api/articles?topic=${testTopic}`)
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles
+                
+                articles.forEach((article) => {
+                    expect(article.topic).toBe(`${testTopic}`)
+                })
+            })
+        });
+
+    //Error handling tests
+        test("Status: 404 and appropriate message if topic does not exist", () => {
+            const testTopic = "nuclear_secrets"
+            return supertest(app)
+            .get(`/api/articles?topic=${testTopic}`)
+            .then((result) => {
+               
+                expect(result.status).toBe(404);
+                expect(result.body.msg).toBe("No topic with that name found.")
+            })
+        });
+        test("Status: 404 and appropriate message if topic exists but has no articles", () => {
+            const testTopic = "paper"
+            return supertest(app)
+            .get(`/api/articles?topic=${testTopic}`)
+            .then((result) => {
+               
+                expect(result.status).toBe(404);
+                expect(result.body.msg).toBe("No articles found for that topic.")
+            })
+        });
+
+
     })
 
 })
