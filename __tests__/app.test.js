@@ -51,8 +51,7 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get("/api/topics")
             .then((result) => {
-                const topics = result.body.topics
-                if (topics.length === 0) {
+                if (!result.body.topics) {
                     expect(result.status).toBe(404);
                     expect(result.msg).toBe("No topics found.")
                 }
@@ -251,6 +250,41 @@ describe("app core GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(400);
                 expect(result.body.msg).toBe("Invalid article id.")
+            })
+        })
+    })
+
+    describe("GET /api/users", () => {
+    //Functionality tests
+        test("Status: 200 should return an array", () => {
+            return supertest(app)
+            .get("/api/users/")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const users = result.body.users
+                expect(Array.isArray(users)).toBe(true);
+            })
+        })
+        test("user objects should have expected properties and values", () => {
+            return supertest(app)
+            .get("/api/users/")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const thirdUser = result.body.users[2]
+                expect(thirdUser.username).toBe("rogersop");
+                expect(thirdUser.name).toBe("paul");
+                expect(thirdUser.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24394918?s=400&v=4");
+            }) 
+        })
+    //Error handling tests
+        test("Status: 404 and appropriate message if query returns nothing from database", () => {
+            return supertest(app)
+            .get("/api/users")
+            .then((result) => {
+                if (!result.body.users) {
+                    expect(result.status).toBe(404);
+                    expect(result.msg).toBe("No users found.")
+                }
             })
         })
     })

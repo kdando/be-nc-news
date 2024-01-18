@@ -1,5 +1,25 @@
 //require connection
 const connection = require("../db/connection")
+//require function from users model
+const checkUserExists = require("../models/users.model")
+
+//CHECK COMMENT EXISTS
+function checkCommentExists (comment_id) {
+    
+    if (isNaN(Number(comment_id))) {
+        return Promise.reject({ status: 400, msg: "Invalid comment id."})
+    }
+    return connection.query(
+        `SELECT * FROM comments
+        WHERE comment_id = $1;`, [comment_id]
+    )
+    .then((result) => {
+        if (result.rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "No comment with that id found."})
+        }
+        return;
+    })
+}
 
 //GET COMMENTS FOR ARTICLE
 function fetchCommentsByArticle (article_id) {
@@ -46,39 +66,4 @@ function removeComment (comment_id) {
 
 }
 
-//CHECK USERNAME EXISTS
-function checkUserExists (username) {
-    if (typeof username !== "string") {
-        return Promise.reject({ status: 400, msg: "Invalid username."})
-    }
-    return connection.query(
-        `SELECT * FROM users
-        WHERE username = $1;`, [username]
-    )
-    .then((result) => {
-        if (result.rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "No user with that name found."})
-        }
-        return;
-    })
-}
-
-//CHECK COMMENT EXISTS
-function checkCommentExists (comment_id) {
-    
-    if (isNaN(Number(comment_id))) {
-        return Promise.reject({ status: 400, msg: "Invalid comment id."})
-    }
-    return connection.query(
-        `SELECT * FROM comments
-        WHERE comment_id = $1;`, [comment_id]
-    )
-    .then((result) => {
-        if (result.rows.length === 0) {
-            return Promise.reject({ status: 404, msg: "No comment with that id found."})
-        }
-        return;
-    })
-}
-
-module.exports = { fetchCommentsByArticle, addComment, removeComment, checkUserExists, checkCommentExists }
+module.exports = { fetchCommentsByArticle, addComment, removeComment, checkCommentExists }
