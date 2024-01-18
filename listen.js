@@ -1,8 +1,9 @@
-//require server, set server listening, then export
+//require server, set server listening
 const app = require("./app");
+const { PORT = 9090 } = process.env;
 
-const listening = app.listen(8080, () => {
-    console.log("Server is listening on port 8080...")
+app.listen(PORT, () => {
+    console.log(`Server is listening on ${PORT}...`)
 })
 
-module.exports = listening;
+// module.exports = listening;

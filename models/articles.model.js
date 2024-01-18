@@ -65,16 +65,6 @@ function fetchArticlesByTopic (topic) {
     })
 }
 
-/*
-`SELECT articles.*,
-COUNT(comments.article_id) AS comment_count 
-FROM articles 
-JOIN comments 
-ON articles.article_id = comments.article_id
-WHERE articles.topic = $1 
-GROUP BY articles.article_id;`
-*/
-
 //GET ALL ARTICLES
 function fetchAllArticles () {
     return connection.query(
