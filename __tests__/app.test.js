@@ -116,6 +116,7 @@ describe("app core GET requests", () => {
                 expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
                 expect(article.votes).toBe(0);
                 expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
+                expect(article.comment_count).toBe("2");
             })
         })
     //Error handling tests
@@ -300,14 +301,14 @@ describe("app core GET requests", () => {
                 expect(Array.isArray(articles)).toBe(true);
             })
         });
-        test("resulting array should only include articles for the queried topic", () => {
+        test.only("resulting array should only include articles for the queried topic", () => {
             const testTopic = "cats";
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
+                console.log(result.body);
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
-                
                 articles.forEach((article) => {
                     expect(article.topic).toBe(`${testTopic}`)
                 })
@@ -330,7 +331,7 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-               
+                
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toBe("No articles found for that topic.")
             })
