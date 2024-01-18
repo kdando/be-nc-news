@@ -1,6 +1,7 @@
-//req models
-const { fetchCommentsByArticle, addComment, removeComment, checkUserExists, checkCommentExists } = require("../models/comments.model")
+//require models
+const { fetchCommentsByArticle, addComment, removeComment } = require("../models/comments.model")
 const { checkArticleExists } = require("../models/articles.model")
+const { checkUserExists } = require("../models/users.model")
 
 //GET COMMENTS BY ARTICLE
 function getCommentsByArticleId (req, res, next) {
@@ -29,6 +30,10 @@ function postCommentByArticleId (req, res, next) {
 
     if (username === undefined || body === undefined) {
         return res.status(400).send({ msg: "Comment must have username and body."})
+    }
+
+    if (typeof username !== "string" || typeof body !== "string") {
+        return res.status(400).send({ msg: "Comments must be text only." })
     }
 
     const articleExistenceQuery = checkArticleExists(article_id);
