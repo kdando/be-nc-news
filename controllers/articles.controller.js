@@ -17,7 +17,6 @@ function getArticleById (req, res, next) {
 function getArticles (req, res, next) {
 
     if (req.query.topic) {
-       console.log(req.query.topic)
         fetchArticlesByTopic(req.query.topic)
         .then((result) => {
             return res.status(200).send({articles: result});
