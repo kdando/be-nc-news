@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 })
 //404 Nothing found (error received from model)
 app.use((err, req, res, next) => {
+   
     if (err.status && err.msg) {
         return res.status(err.status).send(err);
     }
