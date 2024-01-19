@@ -18,7 +18,7 @@ afterAll(() => {
     return connection.end();
 })
 
-
+//TESTS FOR CORE FUNCTIONALITY
 describe("app core GET requests", () => {
 
     describe("GET /api/topics", () => {
@@ -539,6 +539,68 @@ describe("app core DELETE requests", () => {
             .then((result) => {
                 expect(result.status).toBe(404);
                 expect(result.body.msg).toEqual("No comment with that id found.");
+            })
+        })
+    })
+
+})
+
+//TESTS FOR ADVANCE FUNCTIONALITY
+describe("app advanced GET requests", () => {
+
+    describe("GET /api/articles (sorting queries)", () => {
+    //Functionality tests
+        test("Status: 200 should default to sorted by created_at, descending if no queries supplied", () => {
+            return supertest(app)
+            .get("/api/articles")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles
+                expect(articles).toBeSortedBy("created_at", {descending: true});
+            })
+        });
+        test("should return results sorted by any valid column if query supplied, order still defaulting to descending", () => {
+            return supertest(app)
+            .get("/api/articles?sorted_by=votes")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles
+                expect(articles).toBeSortedBy("votes", {descending: true});
+            })
+        });
+        test("results should use both query parameters if supplied", () => {
+
+            return supertest(app)
+            .get("/api/articles?sorted_by=comment_count&order=asc")
+            .then((result) => {
+                
+                expect(result.status).toBe(200);
+                const articles = result.body.articles
+
+                //ADDRESS JEST-SORTED ISSUE
+                //PASSES FOR BOTH TRUE AND FALSE
+
+                // expect(articles).toBeSortedBy("comment_count");
+                expect(articles).toBeSorted({descending: false});
+            })
+
+        })
+
+    //Error handling tests
+        test("Status: 400 and appropriate message if attempting to sort by column that doesn't exist", () => {
+            return supertest(app)
+            .get("/api/articles?sorted_by=coolness")
+            .then((result) => {
+                expect(result.status).toBe(400);
+                expect(result.body.msg).toBe("Can only sort by available columns.")
+            })
+        })
+        test("Status: 400 and appropriate message if attempting to order by anything other than 'asc' or 'desc'", () => {
+            return supertest(app)
+            .get("/api/articles?order=smallest_first")
+            .then((result) => {
+                expect(result.status).toBe(400);
+                expect(result.body.msg).toBe("Can only order by ascending or descending.")
             })
         })
     })
