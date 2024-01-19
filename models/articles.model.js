@@ -66,22 +66,44 @@ function fetchArticlesByTopic (topic) {
 }
 
 //GET ALL ARTICLES
-function fetchAllArticles () {
-    return connection.query(
-        `SELECT articles.author,
-         articles.title,
-         articles.article_id,
-         articles.topic,
-         articles.created_at,
-         articles.votes,
-         articles.article_img_url,
-         COUNT(comments.article_id) AS comment_count 
-         FROM articles 
-         LEFT JOIN comments 
-         ON articles.article_id = comments.article_id 
-         GROUP BY articles.article_id 
-         ORDER BY created_at DESC;`
-    )
+function fetchAllArticles (...args) {
+
+    //confirm args are valid
+    const validSorts = ["title", "author", "article_id", "topic", "created_at", "votes", "body", "article_img_url", "comment_count", undefined]
+    const validOrders = ["asc", "desc", undefined]
+    if (!validSorts.includes(args[0])) {
+        return Promise.reject({ status: 400, msg: "Can only sort by available columns."})
+    }
+    if (!validOrders.includes(args[1])) {
+        return Promise.reject({ status: 400, msg: "Can only order by ascending or descending."})
+    }
+
+    //build query string
+    let queryStr = `SELECT articles.author,
+        articles.title,
+        articles.article_id,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url,
+        COUNT(comments.article_id) AS comment_count 
+        FROM articles 
+        LEFT JOIN comments 
+        ON articles.article_id = comments.article_id 
+        GROUP BY articles.article_id`
+    if (args[0] !== undefined) {
+        queryStr += ` ORDER BY ${args[0]}`
+    } else {
+        queryStr += ` ORDER BY created_at`
+    }
+    if (args[1] === "asc") {
+        queryStr += ` ASC;`
+    } else {
+        queryStr += ` DESC;`
+    }
+
+    //query db with completed string
+    return connection.query(queryStr)
     .then((result) => {
         if (result.rows.length === 0) {
             return Promise.reject({ status: 404, msg: "No articles found."})

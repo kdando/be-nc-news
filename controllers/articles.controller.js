@@ -15,6 +15,10 @@ function getArticleById (req, res, next) {
 
 //GET ALL ARTICLES / BY TOPIC
 function getArticles (req, res, next) {
+
+    //destructure queries assuming they exist
+    const { sorted_by, order } = req.query
+
     if (req.query.topic) {
         fetchArticlesByTopic(req.query.topic)
         .then((result) => {
@@ -23,8 +27,9 @@ function getArticles (req, res, next) {
         .catch((error) => {
             next(error);
         })
+
     } else {
-        fetchAllArticles()
+        fetchAllArticles(sorted_by, order)
         .then((result) => {
             return res.status(200).send({articles: result});
         })
