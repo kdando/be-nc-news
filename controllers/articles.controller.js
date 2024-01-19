@@ -3,6 +3,7 @@ const { fetchArticleById, fetchArticlesByTopic, fetchAllArticles, updateArticleV
 
 //GET ARTICLE BY ID
 function getArticleById (req, res, next) {
+
     const article_id = req.params.article_id;
     fetchArticleById(article_id)
     .then((result) => {
@@ -16,7 +17,7 @@ function getArticleById (req, res, next) {
 //GET ALL ARTICLES / BY TOPIC
 function getArticles (req, res, next) {
 
-    //destructure queries assuming they exist
+    //assume queries exist
     const { sorted_by, order } = req.query
 
     if (req.query.topic) {
