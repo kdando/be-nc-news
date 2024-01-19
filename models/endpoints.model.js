@@ -1,6 +1,6 @@
 //require path module
 const path = require("path");
-const { nextTick } = require("process");
+
 
 function fetchAllEndpoints () {
     const endpointsPath = path.resolve(__dirname, '../endpoints.json')

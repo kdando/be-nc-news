@@ -5,6 +5,7 @@ const endpoints = require("../endpoints.json")
 const fetchAllEndpoints = require("../models/endpoints.model")
 
 function getEndpoints (req, res) {
+
     try {
         const endpoints = fetchAllEndpoints();
         return res.status(200).send(endpoints);
