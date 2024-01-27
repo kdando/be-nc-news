@@ -38,8 +38,7 @@ function fetchCommentsByArticle (article_id) {
 }
 
 //POST A COMMENT
-function addComment (article_id, comment) {
-    const { username, body } = comment;
+function addComment (article_id, username, body) {
     return connection.query(
         `INSERT INTO comments (article_id, author, body, votes)
         VALUES ($1, $2, $3, 0)

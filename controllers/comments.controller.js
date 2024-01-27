@@ -25,8 +25,7 @@ function getCommentsByArticleId (req, res, next) {
 function postCommentByArticleId (req, res, next) {
     
     const article_id = req.params.article_id;
-    const comment = req.body;
-    const { username, body } = comment;
+    const { username, body } = req.body;
 
     if (username === undefined || body === undefined) {
         return res.status(400).send({ msg: "Comment must have username and body."})
@@ -41,7 +40,7 @@ function postCommentByArticleId (req, res, next) {
 
     Promise.all([articleExistenceQuery, userExistenceQuery])
     .then((result) => {
-        addComment(article_id, comment)
+        addComment(article_id, username, body)
         .then((result) => {
             return res.status(201).send({comment: result})
         })
