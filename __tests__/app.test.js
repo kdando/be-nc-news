@@ -37,13 +37,12 @@ describe("app core GET requests", () => {
             .get("/api/topics")
             .then((result) => {
                 const topics = result.body.topics
-                if (topics.length > 0) {
+                expect(topics.length).toBe(3);
                     expect(result.status).toBe(200);
                     topics.forEach((resultItem) => {
-                    expect(resultItem).toHaveProperty("slug");
-                    expect(resultItem).toHaveProperty("description");
+                        expect(resultItem).toHaveProperty("slug");
+                        expect(resultItem).toHaveProperty("description");
                     })
-                }
             })
         })
     //Error handling tests
@@ -88,8 +87,7 @@ describe("app core GET requests", () => {
 
     describe("GET /api/articles/:article_id", () => {     
     //Functionality tests
-        test("Status: 200 should return a single object", () => {
-            //test variable for parametric endpoint
+        test("Status: 200 should return a single object", () => {        
             const article_id = 5;
             return supertest(app)
             .get(`/api/articles/${article_id}`)
@@ -100,8 +98,7 @@ describe("app core GET requests", () => {
                 expect(Array.isArray(article)).toBe(false);
             })
         })
-        test("returned article object has expected properties with expected values", () => {
-            //new test variable
+        test("returned article object has expected properties with expected values", () => {         
             const article_id = 3;
             return supertest(app)
             .get(`/api/articles/${article_id}`)
@@ -164,6 +161,7 @@ describe("app core GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
+                expect(articles.length).toBe(13);
                 articles.forEach((articleObject) => {
                     expect(articleObject).not.toHaveProperty("body");
                 })
@@ -175,6 +173,7 @@ describe("app core GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
+                expect(articles.length).toBe(13);
                 articles.forEach((articleObject) => {
                     expect(articleObject).toHaveProperty("comment_count");
                     expect(Number(articleObject.comment_count)).not.toBeNaN();
@@ -185,9 +184,7 @@ describe("app core GET requests", () => {
 
     describe("GET /api/articles/:article_id/comments", () => {
     // Functionality tests
-
-        test("Status: 200 should return an array", () => {
-            //test variable for parametric endpoint
+        test("Status: 200 should return an array", () => { 
             const article_id = 5;
             return supertest(app)
             .get(`/api/articles/${article_id}/comments`)
@@ -198,7 +195,7 @@ describe("app core GET requests", () => {
             })
         })
         test("array should be sorted by date, most recent first", () => {
-            //new test variable
+            
             const article_id = 9;
             return supertest(app)
             .get(`/api/articles/${article_id}/comments`)
@@ -209,7 +206,7 @@ describe("app core GET requests", () => {
             })
         })
         test("array objects should have expected properties and values", () => {
-            //new test variable
+            
             const article_id = 1;
             return supertest(app)
             .get(`/api/articles/${article_id}/comments`)
@@ -308,6 +305,7 @@ describe("app core GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
+                expect(articles.length).toBe(1);
                 articles.forEach((article) => {
                     expect(article.topic).toBe(`${testTopic}`)
                 })
@@ -343,10 +341,8 @@ describe("app core POST requests", () => {
 
     describe("POST /api/articles/:article_id/comments", () => {
     //Functionality tests
-        test("Status: 201 should return the posted comment", () => {
-            //test variable for parametric endpoint
-            const article_id = 3;
-            //test comment for post request
+        test("Status: 201 should return the posted comment", () => {          
+            const article_id = 3;        
             const newComment = {
                 "username": "lurker",
                 "body": "I don't know where I am."
@@ -355,6 +351,7 @@ describe("app core POST requests", () => {
             .post(`/api/articles/${article_id}/comments`)
             .send(newComment)
             .then((result)=> {;
+                
                 expect(result.status).toBe(201);
                 const comment = result.body.comment;
                 expect(comment.author).toBe(newComment.username);
@@ -364,9 +361,7 @@ describe("app core POST requests", () => {
 
     //Error handling tests
         test("Status: 404 and appropriate message if username not in database", () => {
-            //test variable for parametric endpoint
-            const article_id = 6;
-            //test comment for post request
+            const article_id = 6;         
             const newComment = {
                 "username": "GenuineHumanBeing",
                 "body": "Total freedom in 3 easy steps!!CLICKHERE"
@@ -380,10 +375,8 @@ describe("app core POST requests", () => {
             })
         })
 
-        test("Status: 400 and appropriate message if request comment object missing necessary properties", () => {
-            //test variable for parametric endpoint
-            const article_id = 1;
-            //test comment for post request
+        test("Status: 400 and appropriate message if request comment object missing necessary properties", () => {         
+            const article_id = 1;          
             const newComment = {
                 "username": "butter_bridge",
             };
@@ -396,10 +389,8 @@ describe("app core POST requests", () => {
             })
         })
 
-        test("Status: 400 and appropriate message if invalid article_id", () => {
-            //test variable for parametric endpoint
-            const article_id = "pinecone";
-            //test comment for post request
+        test("Status: 400 and appropriate message if invalid article_id", () => {         
+            const article_id = "pinecone";          
             const newComment = {
                 "username": "lurker",
                 "body": "The secret to life is..."
@@ -413,9 +404,7 @@ describe("app core POST requests", () => {
             })
         })
         test("Status: 404 and appropriate message if valid but non-existent article_id", () => {
-            //test variable for parametric endpoint
             const article_id = 777;
-            //test comment for post request
             const newComment = {
                 "username": "lurker",
                 "body": "Wait this time I've got it..."
@@ -438,9 +427,7 @@ describe("app core PATCH requests", () => {
     describe("PATCH /api/articles/:article_id", () => {
     //Functionality tests
         test("Status: 200 should respond with updated article", () => {
-            //test variable for parametric endpoint
             const article_id = 3;
-            //test object for patch request
             const newVotes = {
                 "inc_votes": 100
             };
@@ -455,10 +442,8 @@ describe("app core PATCH requests", () => {
                 expect(article.votes).toBe(100)
             })
         })
-        test("article's 'votes' key value is correctly adjusted", () => {
-            //new test variable
+        test("article's 'votes' key value is correctly adjusted, all other keys remain present and unchanged", () => {
             const article_id = 1;
-            //new test object
             const newVotes = {
                 "inc_votes": -50
             };
@@ -469,13 +454,17 @@ describe("app core PATCH requests", () => {
                 expect(result.status).toBe(200)
                 const article = result.body.article;
                 expect(article.votes).toBe(50);
+                expect(article.title).toBe("Living in the shadow of a great man");
+                expect(article.topic).toBe("mitch");
+                expect(article.author).toBe("butter_bridge");
+                expect(article.body).toBe("I find this existence challenging");
+                expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+                expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
             })
         })
     //Error handling tests
         test("Status: 400 if inc_votes is note a number", () => {
-            //new test variable
             const article_id = 9;
-            //new test object
             const newVotes = {
                 "inc_votes": "one hundred"
             };
@@ -488,9 +477,7 @@ describe("app core PATCH requests", () => {
             })
         })
         test("Status: 400 if request object is malformed", () => {
-            //new test variable
             const article_id = 9;
-            //new test object
             const newVotes = {
                 "increase_vote_total": 1000
             };
@@ -502,6 +489,32 @@ describe("app core PATCH requests", () => {
                 expect(result.body.msg).toBe("Requires an 'inc_votes' key.");
             })
         })
+        test("Status: 404 and appropriate message if trying to patch a valid but non-existent article_id", () => {
+            const article_id = 9999;
+            const newVotes = {
+                "inc_votes": 2
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(404)
+                expect(result.body.msg).toBe("No article with that id found.");
+            })
+        })
+        test("Status: 400 and appropriate message if trying to patch an invalid article_id", () => {
+            const article_id = "bottom";
+            const newVotes = {
+                "inc_votes": 200000
+            };
+            return supertest(app)
+            .patch(`/api/articles/${article_id}`)
+            .send(newVotes)
+            .then((result) => {
+                expect(result.status).toBe(400)
+                expect(result.body.msg).toBe("Invalid article id.");
+            })
+        })
     })
 
 })
@@ -511,7 +524,6 @@ describe("app core DELETE requests", () => {
     describe("DELETE /api/comments/:comment_id", () => {
     //Functionality tests
         test("Status: 204 for successful deletion should return no content", () => {
-            //test variable for parametric endpoint
             const comment_id = 2;
             return supertest(app)
             .delete(`/api/comments/${comment_id}`)
@@ -522,7 +534,6 @@ describe("app core DELETE requests", () => {
         })
     //Error handling tests
         test("Status: 400 and appropriate message if comment id invalid.", () => {
-            //new test variable
             const comment_id = "worst comment";
             return supertest(app)
             .delete(`/api/comments/${comment_id}`)
@@ -532,7 +543,6 @@ describe("app core DELETE requests", () => {
             })
         })
         test("Status: 404 and appropriate message if comment id valid but not present.", () => {
-            //new test variable
             const comment_id = 888;
             return supertest(app)
             .delete(`/api/comments/${comment_id}`)
