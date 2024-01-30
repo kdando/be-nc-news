@@ -579,19 +579,12 @@ describe("app advanced GET requests", () => {
             })
         });
         test("results should use both query parameters if supplied", () => {
-
             return supertest(app)
             .get("/api/articles?sorted_by=comment_count&order=asc")
             .then((result) => {
-                
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
-
-                //ADDRESS JEST-SORTED ISSUE
-                //PASSES FOR BOTH TRUE AND FALSE
-
-                // expect(articles).toBeSortedBy("comment_count");
-                expect(articles).toBeSorted({descending: false});
+                expect(articles).toBeSortedBy("comment_count", {descending: false, coerce: true});
             })
 
         })
