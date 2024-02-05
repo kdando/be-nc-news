@@ -6,6 +6,10 @@ app.use(express.json());
 //require connection
 const connection = require("./db/connection");
 
+//require and use CORS
+const cors = require('cors')
+app.use(cors());
+
 //require router
 const apiRouter = require("./routes/api-router");
 
