@@ -113,7 +113,7 @@ describe("app core GET requests", () => {
                 expect(article.created_at).toBe("2020-11-03T09:12:00.000Z");
                 expect(article.votes).toBe(0);
                 expect(article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700");
-                expect(article.comment_count).toBe("2");
+                expect(article.comment_count).toBe(2);
             })
         })
     //Error handling tests
@@ -176,7 +176,7 @@ describe("app core GET requests", () => {
                 expect(articles.length).toBe(13);
                 articles.forEach((articleObject) => {
                     expect(articleObject).toHaveProperty("comment_count");
-                    expect(Number(articleObject.comment_count)).not.toBeNaN();
+                    expect(typeof articleObject.comment_count).toBe("number");
                 })
             })
         })
@@ -585,7 +585,7 @@ describe("app advanced GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
-                expect(articles).toBeSortedBy("comment_count", {ascending: true, coerce: true});
+                expect(articles).toBeSortedBy("comment_count", {ascending: true});
             })
 
         })
