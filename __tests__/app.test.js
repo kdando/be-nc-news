@@ -576,6 +576,7 @@ describe("app advanced GET requests", () => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 expect(articles).toBeSortedBy("votes", {descending: true});
+                console.log(articles)
             })
         });
         test("results should use both query parameters if supplied", () => {
@@ -584,7 +585,7 @@ describe("app advanced GET requests", () => {
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
-                expect(articles).toBeSortedBy("comment_count", {descending: false, coerce: true});
+                expect(articles).toBeSortedBy("comment_count", {ascending: true, coerce: true});
             })
 
         })
