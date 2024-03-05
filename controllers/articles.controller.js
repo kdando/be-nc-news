@@ -1,5 +1,5 @@
 //require models
-const { fetchArticleById, fetchArticlesByTopic, fetchAllArticles, updateArticleVotes } = require("../models/articles.model.js");
+const { fetchArticleById, fetchAllArticles, updateArticleVotes } = require("../models/articles.model.js");
 
 //GET ARTICLE BY ID
 function getArticleById (req, res, next) {
@@ -18,10 +18,9 @@ function getArticleById (req, res, next) {
 function getArticles (req, res, next) {
 
     //assume queries exist
-    const { sorted_by, order } = req.query
+    const { topic, sorted_by, order } = req.query
 
-    if (req.query.topic) {
-        fetchArticlesByTopic(req.query.topic)
+        fetchAllArticles(topic, sorted_by, order)
         .then((result) => {
             return res.status(200).send({articles: result});
         })
@@ -29,15 +28,6 @@ function getArticles (req, res, next) {
             next(error);
         })
 
-    } else {
-        fetchAllArticles(sorted_by, order)
-        .then((result) => {
-            return res.status(200).send({articles: result});
-        })
-        .catch((error) => {
-            next(error);
-        })
-    }
 }
 
 //PATCH ARTICLE VOTES BY ID

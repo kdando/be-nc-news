@@ -20,6 +20,43 @@ function checkArticleExists (article_id) {
     })
 }
 
+//BUILD QUERY FOR ALL ARTICLES (INCL TOPIC, SORT, ORDER)
+function buildQueryString (topic, sorted_by, order) {
+    
+    //build query string
+    let queryStr = `SELECT articles.author,
+        articles.title,
+        articles.article_id,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url,
+        CAST(COUNT(comments.article_id) AS INT) AS comment_count 
+        FROM articles 
+        LEFT JOIN comments 
+        ON articles.article_id = comments.article_id`
+    
+    if (topic !== undefined) {
+        queryStr += ` WHERE articles.topic = '${topic}'`
+    }
+
+    queryStr += ` GROUP BY articles.article_id`
+    
+    if (sorted_by !== undefined) {
+        queryStr += ` ORDER BY ${sorted_by}`
+    } else {
+        queryStr += ` ORDER BY created_at`
+    }
+    if (order === "asc") {
+        queryStr += ` ASC;`
+    } else {
+        queryStr += ` DESC;`
+    }
+
+    return queryStr;
+
+}
+
 //GET ARTICLE BY ID
 function fetchArticleById (article_id) {
 
@@ -41,69 +78,43 @@ function fetchArticleById (article_id) {
     
 }
 
-//GET ARTICLES BY TOPIC
-function fetchArticlesByTopic (topic) {
-
-    return checkTopicExists(topic)
-    .then(() => {
-        return connection.query(
-            `SELECT articles.*,
-            CAST(COUNT(comments.article_id) AS INT) AS comment_count
-            FROM articles 
-            JOIN comments 
-            ON articles.article_id = comments.article_id
-            WHERE articles.topic = $1 
-            GROUP BY articles.article_id;`, [topic]
-            )
-        .then((result) => {
-            if (result.rows.length === 0) {
-                return Promise.reject({ status: 200, msg: "No articles found for that topic."});
-            } else {
-                return result.rows;
-            }
-            
-        })
-    })
-}
-
 //GET ALL ARTICLES
-function fetchAllArticles (...args) {
+function fetchAllArticles (topic, sorted_by, order) {
 
-    //confirm args are valid
-    const validSorts = ["title", "author", "article_id", "topic", "created_at", "votes", "body", "article_img_url", "comment_count", undefined]
-    const validOrders = ["asc", "desc", undefined]
-    if (!validSorts.includes(args[0])) {
-        return Promise.reject({ status: 400, msg: "Can only sort by available columns."})
-    }
-    if (!validOrders.includes(args[1])) {
-        return Promise.reject({ status: 400, msg: "Can only order by ascending or descending."})
-    }
+     //confirm sort and order args are valid
+     const validSorts = ["title", "author", "article_id", "topic", "created_at", "votes", "body", "article_img_url", "comment_count", undefined]
+     const validOrders = ["asc", "desc", undefined]
+     if (!validSorts.includes(sorted_by)) {
+         return Promise.reject({ status: 400, msg: "Can only sort by available columns."})
+     }
+     if (!validOrders.includes(order)) {
+         return Promise.reject({ status: 400, msg: "Can only order by ascending or descending."})
+     }
 
-    //build query string
-    let queryStr = `SELECT articles.author,
-        articles.title,
-        articles.article_id,
-        articles.topic,
-        articles.created_at,
-        articles.votes,
-        articles.article_img_url,
-        CAST(COUNT(comments.article_id) AS INT) AS comment_count 
-        FROM articles 
-        LEFT JOIN comments 
-        ON articles.article_id = comments.article_id 
-        GROUP BY articles.article_id`
-    if (args[0] !== undefined) {
-        queryStr += ` ORDER BY ${args[0]}`
-    } else {
-        queryStr += ` ORDER BY created_at`
-    }
-    if (args[1] === "asc") {
-        queryStr += ` ASC;`
-    } else {
-        queryStr += ` DESC;`
+     //initiate empty query
+     let queryStr = ""
+
+    //if topic given, check it exists, then run query
+    if (topic !== undefined) {
+        return checkTopicExists(topic)
+        .then(() => {
+            queryStr = buildQueryString(topic, sorted_by, order)
+            return queryStr;
+        })
+        .then((queryStr) => {
+            return connection.query(queryStr)
+            .then((result) => {
+                if (result.rows.length === 0) {
+                    return Promise.reject({ status: 200, msg: "No articles found for that topic."})
+                } else {
+                    return result.rows;
+                }
+            })
+        })
     }
 
-    //query db with completed string
+    //if topic not given just run query
+    queryStr = buildQueryString(topic, sorted_by, order)
     return connection.query(queryStr)
     .then((result) => {
         if (result.rows.length === 0) {
@@ -112,6 +123,7 @@ function fetchAllArticles (...args) {
             return result.rows;
         }
     })
+
 }
 
 //PATCH ARTICLE BY ID
@@ -132,4 +144,4 @@ function updateArticleVotes(article_id, votes) {
 
 }
 
-module.exports = { checkArticleExists, fetchArticleById, fetchArticlesByTopic, fetchAllArticles, updateArticleVotes }
+module.exports = { checkArticleExists, fetchArticleById, fetchAllArticles, updateArticleVotes }
