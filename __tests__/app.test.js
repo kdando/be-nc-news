@@ -291,7 +291,6 @@ describe("app core GET requests", () => {
             return supertest(app)
             .get(`/api/articles?topic=${testTopic}`)
             .then((result) => {
-
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 expect(Array.isArray(articles)).toBe(true);
@@ -576,7 +575,6 @@ describe("app advanced GET requests", () => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles
                 expect(articles).toBeSortedBy("votes", {descending: true});
-                console.log(articles)
             })
         });
         test("results should use both query parameters if supplied", () => {
@@ -587,7 +585,19 @@ describe("app advanced GET requests", () => {
                 const articles = result.body.articles
                 expect(articles).toBeSortedBy("comment_count", {ascending: true});
             })
-
+        })
+        test("returns are as expected for combination of queries, including topic", () => {
+            return supertest(app)
+            .get("/api/articles?topic=mitch&sorted_by=comment_count&order=desc")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles;
+                expect(articles).toBeSortedBy("comment_count", {descending: true});
+                expect(articles.length).toBe(12);
+                articles.forEach((article) => {
+                    expect(article.topic).toBe("mitch")
+                })
+            })
         })
 
     //Error handling tests

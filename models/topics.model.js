@@ -2,6 +2,7 @@ const connection = require("../db/connection")
 
 //CHECK TOPIC EXISTS
 function checkTopicExists (topic) {
+
     if (typeof topic !== "string") {
         return Promise.reject({ status: 400, msg: "Invalid topic."})
     }
