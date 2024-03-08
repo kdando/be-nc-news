@@ -586,13 +586,26 @@ describe("app advanced GET requests", () => {
                 expect(articles).toBeSortedBy("comment_count", {ascending: true});
             })
         })
-        test("returns are as expected for combination of queries, including topic", () => {
+        test("results are as expected for combination of queries, including topic", () => {
             return supertest(app)
             .get("/api/articles?topic=mitch&sorted_by=comment_count&order=desc")
             .then((result) => {
                 expect(result.status).toBe(200);
                 const articles = result.body.articles;
                 expect(articles).toBeSortedBy("comment_count", {descending: true});
+                expect(articles.length).toBe(12);
+                articles.forEach((article) => {
+                    expect(article.topic).toBe("mitch")
+                })
+            })
+        })
+        test("results can take queries in any order", () => {
+            return supertest(app)
+            .get("/api/articles?order=asc&sorted_by=votes&topic=mitch")
+            .then((result) => {
+                expect(result.status).toBe(200);
+                const articles = result.body.articles;
+                expect(articles).toBeSortedBy("votes", {descending: false});
                 expect(articles.length).toBe(12);
                 articles.forEach((article) => {
                     expect(article.topic).toBe("mitch")
