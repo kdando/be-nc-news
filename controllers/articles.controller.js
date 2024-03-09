@@ -14,7 +14,7 @@ function getArticleById (req, res, next) {
     })
 }
 
-//GET ALL ARTICLES / BY TOPIC
+//GET ALL ARTICLES / FILTER BY QUERIES
 function getArticles (req, res, next) {
 
     //assume queries exist
